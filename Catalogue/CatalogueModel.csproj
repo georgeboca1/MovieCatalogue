@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E68BF5CC-C7ED-4B20-9C2D-C256DA57A022}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>MovieCatalogue</RootNamespace>
-    <AssemblyName>MovieCatalogue</AssemblyName>
+    <ProjectGuid>{7F04E697-A8F2-43CB-A382-FFDFECD3738A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CatalogueModel</RootNamespace>
+    <AssemblyName>CatalogueModel</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,14 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Models\Character.cs" />
-    <Compile Include="Core\Models\Catalogue.cs" />
-    <Compile Include="Core\Models\Movie.cs" />
-    <Compile Include="Core\Program.cs" />
+    <Compile Include="Catalogue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MovieModels\MovieModels.csproj">
+      <Project>{0e03ab8a-1301-48ef-9a32-59859f2d9591}</Project>
+      <Name>MovieModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

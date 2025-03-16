@@ -1,11 +1,11 @@
 ﻿using System;
 
 
-namespace MovieCatalogue
+namespace MovieModels
 {
-    internal class Character
+    public class Character
     {
-        DateTime birth;
+        public DateTime birth;
 
         private string FirstName;
         private string LastName;
@@ -20,6 +20,11 @@ namespace MovieCatalogue
         public string CharacterInfo()
         {
             return $"Nume: {FullName}\nVarsta:{birth.Year}";
+        }
+
+        public override string ToString()
+        {
+            return this.FullName;
         }
     }
 }

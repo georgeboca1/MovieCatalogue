@@ -1,10 +1,11 @@
 ﻿using System;
+using MovieModels;
 using System.Collections.Generic;
 
 
-namespace MovieCatalogue
+namespace CatalogueModel
 {
-    internal class Catalogue
+    public class Catalogue
     {
         // This class contains a list of all available movies in the application
         public List<Movie> Movies;
@@ -39,6 +40,12 @@ namespace MovieCatalogue
             return m;
         }
 
+        public Movie FindMovieByUUID(string uuid)
+        {
+            Movie m = Movies.Find(mov => mov.GetUUID() == Guid.Parse(uuid));
+            return m;
+        }
+
         public List<Movie> FindMoviesByName(string name)
         {
             List<Movie> m = Movies.FindAll(mov => mov.Name == name);
@@ -48,6 +55,11 @@ namespace MovieCatalogue
         public List<Movie> GetMovies()
         {
             return Movies;
+        }
+
+        public void ClearCatalogue()
+        {
+            Movies.Clear();
         }
     }
 }

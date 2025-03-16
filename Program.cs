@@ -1,8 +1,11 @@
 ﻿using System;
+using CatalogueModel;
+using MovieModels;
+using FileManager;
 using System.Collections.Generic;
 
 
-namespace MovieCatalogue
+namespace Core
 {
     internal class Program
     {
@@ -11,12 +14,14 @@ namespace MovieCatalogue
             Catalogue catalogue = new Catalogue();
             while (true)
             {
-                Console.WriteLine("=== MENIU CATALOG FILME ===");
+                Console.WriteLine("=== MENIU test CATALOG FILME ===");
                 Console.WriteLine("1. Adauga film");
                 Console.WriteLine("2. Sterge film");
                 Console.WriteLine("3. Afiseaza catalog");
                 Console.WriteLine("4. Cautare dupa nume");
-                Console.WriteLine("5. Exit");
+                Console.WriteLine("5. Salveaza in fisier");
+                Console.WriteLine("6. Incarca din fisier");
+                Console.WriteLine("7. Exit");
                 Console.Write(">>");
                 Int32.TryParse(Console.ReadLine(), out int i);
 
@@ -35,6 +40,12 @@ namespace MovieCatalogue
                         CautaFilm(catalogue);
                         break;
                     case 5:
+                        SalveazaFisier(catalogue);
+                        break;
+                    case 6:
+                        IncarcaDinFisier(catalogue);
+                        break;
+                    case 7:
                         Environment.Exit(0);
                         break;
                 }
@@ -48,7 +59,27 @@ namespace MovieCatalogue
             string nume = Console.ReadLine();
             Console.Write("\nDescrierea filmului:");
             string desc = Console.ReadLine();
-            catalogue.AddMovie(new Movie(nume, desc));
+            Console.Write("\nRating film:");
+            int rating = Int32.Parse(Console.ReadLine());
+            Console.Write("\nReview film:");
+            string review = Console.ReadLine();
+            Console.Write("\nNumele regizorului:");
+            string directorName = Console.ReadLine();
+            Console.Write("\nAnul nasterii regizorului:");
+            int directorBirth = Int32.Parse(Console.ReadLine());
+            Console.Write("\nNumele actorilor (separate prin virgula):");
+            string[] actorNames = Console.ReadLine().Split(',');
+            Console.Write("\nAnul nasterii actorilor (separate prin virgula):");
+            string[] actorBirths = Console.ReadLine().Split(',');
+            Movie m = new Movie(nume, desc);
+            m.AddRating(rating);
+            m.AddReview(review);
+            m.AddDirector(new Character(directorName, directorBirth));
+            for (int i = 0; i < actorNames.Length; i++)
+            {
+                m.AddActor(new Character(actorNames[i], Int32.Parse(actorBirths[i])));
+            }
+            catalogue.AddMovie(m);
         }
 
         static void StergeFilm(Catalogue catalogue)
@@ -88,5 +119,26 @@ namespace MovieCatalogue
             Console.ReadKey();
         }
 
+        static void SalveazaFisier(Catalogue catalogue)
+        {
+            MovieManagerText fileManager = new MovieManagerText("movies.txt");
+            foreach (Movie m in catalogue.GetMovies())
+            {
+                fileManager.AddMovie(m.DatabaseInfo());
+            }
+
+        }
+
+        static void IncarcaDinFisier(Catalogue catalogue)
+        {
+            MovieManagerText fileManager = new MovieManagerText("movies.txt");
+            List<string> lines = fileManager.GetContent();
+            foreach (string line in lines)
+            {
+                if (catalogue.FindMovieByUUID(line.Split(';')[0]) == null)
+                    catalogue.AddMovie(new Movie(line));
+            }
+            Console.ReadKey();
+        }
     }
 }
