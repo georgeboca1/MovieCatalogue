@@ -5,6 +5,18 @@ using System.Linq;
 
 namespace MovieModels
 {
+    public enum GenreType
+    {
+        None = 0,
+        Action = 1,
+        Adventure = 2,
+        Animation = 3,
+        Biography = 4,
+        Comedy = 5,
+        Crime = 6,
+        Drama = 7
+    }
+
     public class Movie
     {
         private Guid Uuid;
@@ -17,6 +29,8 @@ namespace MovieModels
         public string Description { get; set; }
         public string Review { get; set; }
 
+        private GenreType Genre { get; set; }
+
         public Movie()
         {
             this.Uuid = Guid.NewGuid();
@@ -24,6 +38,7 @@ namespace MovieModels
             this.Description = "Undefined";
             this.Rating = -1;
             this.Review = string.Empty;
+            this.Genre = GenreType.None;
             this.Director = new Character("null", DateTime.Today.Year);
 
         }
@@ -35,6 +50,7 @@ namespace MovieModels
             this.Description = description;
             this.Rating = -1;
             this.Review = string.Empty;
+            this.Genre = GenreType.None;
             this.Director = new Character("null null", DateTime.Today.Year);
         }
 
@@ -44,6 +60,7 @@ namespace MovieModels
             this.Name = name;
             this.Description = description;
             this.Rating = -1;
+            this.Genre = GenreType.None;
             this.Review = string.Empty;
             this.Director = new Character("null null", DateTime.Today.Year);
         }
@@ -56,14 +73,8 @@ namespace MovieModels
             this.Description = data[2];
             this.Rating = Int32.Parse(data[3]);
             this.Review = data[4];
-            string[] directorData = data[5].Split('|');
-            this.Director = new Character(directorData[0], DateTime.Parse(directorData[1]).Year);
-            string[] actorNames = data[6].Split('|');
-            string[] actorBirths = data[7].Split('|');
-            for (int i = 0; i < actorNames.Length; i++)
-            {
-                this.actors.Add(new Character(actorNames[i], DateTime.Parse(directorData[1]).Year));
-            }
+            this.Director = new Character("null null", DateTime.Today.Year);
+            this.Genre = (GenreType)Enum.Parse(typeof(GenreType),data[7]);
         }
 
         public Guid GetUUID()
@@ -100,6 +111,11 @@ namespace MovieModels
             this.actors.Remove(actor);
         }
 
+        public void AddGenre(GenreType genre)
+        {
+            this.Genre = genre;
+        }
+
         public Character GetDirector()
         {
             return Director;
@@ -117,12 +133,12 @@ namespace MovieModels
 
         public string MovieInfo()
         {
-            return $"UUID: {this.Uuid}\nNume: {this.Name}\nDescriere: {this.Description}\nRating: {(this.Rating == -1 ? "Fara rating" : Convert.ToString((float)Rating / 2))}\nReview: {(this.Review == string.Empty ? "Fara review" : this.Review)}";
+            return $"UUID: {this.Uuid}\nNume: {this.Name}\nDescriere: {this.Description}\nGenre: {this.Genre.ToString()}\nRating: {(this.Rating == -1 ? "Fara rating" : Convert.ToString((float)Rating / 2))}\nReview: {(this.Review == string.Empty ? "Fara review" : this.Review)}\nDirector: {this.Director.FullName}\nActori:{string.Join(",",this.actors.ToArray().Select(a => a.FullName))}\n";
         }
 
         public string DatabaseInfo()
         {
-            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director.FullName}|{this.Director.birth.ToString()};{string.Join("|",this.actors.ToArray().Select(a => a.FullName))};{string.Join("|", this.actors.ToArray().Select(a => a.birth.ToString()))}";
+            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director.GetUUID()};{string.Join("|",this.actors.ToArray().Select(a => a.GetUUID()))};{this.Genre.ToString()}";
         }
     }
 }

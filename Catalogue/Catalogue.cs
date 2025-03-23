@@ -20,6 +20,14 @@ namespace CatalogueModel
             this.Movies.Add(m);
         }
 
+        public void AddMovies(List<Movie> m)
+        {
+            foreach(Movie mov in m)
+            {
+                this.Movies.Add(mov);
+            }
+        }
+
         public int RemoveMovieByUUID(Guid uuid)
         {
             Movie m = Movies.Find(mov => mov.GetUUID() == uuid);
