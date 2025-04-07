@@ -28,6 +28,7 @@ namespace MovieModels
         public string Name { get; set; }
         public string Description { get; set; }
         public string Review { get; set; }
+        public string ImagePath { get; set; }
 
         private GenreType Genre { get; set; }
 
@@ -40,10 +41,11 @@ namespace MovieModels
             this.Review = string.Empty;
             this.Genre = GenreType.None;
             this.Director = new Character("null", DateTime.Today.Year);
+            this.ImagePath = string.Empty;
 
         }
 
-        public Movie(string name, string description)
+        public Movie(string name, string description, string imagePath)
         {
             this.Uuid = Guid.NewGuid();
             this.Name = name;
@@ -52,9 +54,10 @@ namespace MovieModels
             this.Review = string.Empty;
             this.Genre = GenreType.None;
             this.Director = new Character("null null", DateTime.Today.Year);
+            this.ImagePath = imagePath;
         }
 
-        public Movie(Guid uuid, string name, string description)
+        public Movie(Guid uuid, string name, string description, string imagePath)
         {
             this.Uuid = uuid;
             this.Name = name;
@@ -63,6 +66,7 @@ namespace MovieModels
             this.Genre = GenreType.None;
             this.Review = string.Empty;
             this.Director = new Character("null null", DateTime.Today.Year);
+            this.ImagePath = imagePath;
         }
 
         public Movie(string fileInfo)
@@ -75,6 +79,7 @@ namespace MovieModels
             this.Review = data[4];
             this.Director = new Character("null null", DateTime.Today.Year);
             this.Genre = (GenreType)Enum.Parse(typeof(GenreType),data[7]);
+            this.ImagePath = data[8];
         }
 
         public Guid GetUUID()
@@ -111,9 +116,10 @@ namespace MovieModels
             this.actors.Remove(actor);
         }
 
-        public void AddGenre(GenreType genre)
+        public void AddGenre(string genre)
+
         {
-            this.Genre = genre;
+            this.Genre = (GenreType)Enum.Parse(typeof(GenreType),genre);
         }
 
         public Character GetDirector()
@@ -131,6 +137,11 @@ namespace MovieModels
             return Rating;
         }
 
+        public string GetGenreString()
+        {
+            return Genre.ToString();
+        }
+
         public string MovieInfo()
         {
             return $"UUID: {this.Uuid}\nNume: {this.Name}\nDescriere: {this.Description}\nGenre: {this.Genre.ToString()}\nRating: {(this.Rating == -1 ? "Fara rating" : Convert.ToString((float)Rating / 2))}\nReview: {(this.Review == string.Empty ? "Fara review" : this.Review)}\nDirector: {this.Director.FullName}\nActori:{string.Join(",",this.actors.ToArray().Select(a => a.FullName))}\n";
@@ -138,7 +149,12 @@ namespace MovieModels
 
         public string DatabaseInfo()
         {
-            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director.GetUUID()};{string.Join("|",this.actors.ToArray().Select(a => a.GetUUID()))};{this.Genre.ToString()}";
+            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director.GetUUID()};{string.Join("|",this.actors.ToArray().Select(a => a.GetUUID()))};{this.Genre.ToString()};{this.ImagePath}";
+        }
+
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }
