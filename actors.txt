@@ -1,2 +1,6 @@
 7fd03eb7-fb55-462c-8bb2-3886144de659;Leonardo Dicaprio;2001
 4de5d3af-8764-4b9a-97e2-93d3c445094a;Brad Pitt;1988
+9106b678-cead-45d9-9c2f-817007cb304d;Ryan Reynolds;1989
+833302cb-6494-468c-80f9-942622d61ac2;Hugh Jackman;1989
+7472f748-4d8e-45ad-8cd4-88ca2c6ec428;Felix Kammerer;2025
+51a007f0-c602-4aa5-9324-675279be30f3;Felix Kammerer;2025

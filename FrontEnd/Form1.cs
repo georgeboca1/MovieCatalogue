@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using CatalogueModel;
 using FileManager;
 using MovieModels;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace FrontEnd
 {
@@ -23,6 +22,7 @@ namespace FrontEnd
 
         Panel movieGridPanel;
         Panel movieDetailsPanel;
+        bool isinGrid = true;
         public Form1()
         {
             this.Load += Form1_Load;
@@ -35,6 +35,8 @@ namespace FrontEnd
             
             InitializeComponent();
         }
+
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -53,6 +55,21 @@ namespace FrontEnd
                 }
 
                 flowLayoutPanel1.Controls.Add(card);
+            }
+        }
+
+        public Image LoadAndResizeImage(string imagePath, int targetWidth, int targetHeight)
+        {
+            using (var original = Image.FromFile(imagePath))
+            {
+                // Create a new bitmap with the desired size
+                var resized = new Bitmap(targetWidth, targetHeight);
+                using (var graphics = Graphics.FromImage(resized))
+                {
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.DrawImage(original, 0, 0, targetWidth, targetHeight);
+                }
+                return resized; // This is the downscaled image, which you can assign to your PictureBox.
             }
         }
 
@@ -137,10 +154,11 @@ namespace FrontEnd
             var pictureBox = sender as PictureBox;
             if (pictureBox == null) return;
 
-            var img = Image.FromFile(imagePath); // Load the image
-
-            // Draw the image first
-            e.Graphics.DrawImage(img, 0, 0, pictureBox.Width, pictureBox.Height);
+            using (var img = Image.FromFile(imagePath))
+            {
+                // Draw the image first
+                e.Graphics.DrawImage(img, 0, 0, pictureBox.Width, pictureBox.Height);
+            }
 
             // Apply the fade effect using a gradient brush for the right and bottom edges
             var fadeBrushHorizontal = new LinearGradientBrush(
@@ -164,9 +182,15 @@ namespace FrontEnd
             this.Controls.Remove(movieDetailsPanel);
             foreach (Control item in movieDetailsPanel.Controls)
             {
+                // If the control is a PictureBox and has an image, dispose it.
+                if (item is PictureBox pb && pb.Image != null)
+                {
+                    pb.Image.Dispose();
+                }
                 item.Dispose();
             }
             movieDetailsPanel.Controls.Clear();
+            movieDetailsPanel.Dispose(); // Ensure the panel itself is disposed
 
             this.Controls.Add(movieGridPanel);
         }
@@ -183,7 +207,7 @@ namespace FrontEnd
             var pictureBox = new PictureBox
             {
                 Size = new Size(150, 200),
-                Image = Image.FromFile(imagePath), // or use Image.FromStream()
+                Image = LoadAndResizeImage(imagePath, 150, 200), // or use Image.FromStream()
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 

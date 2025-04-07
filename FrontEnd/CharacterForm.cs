@@ -15,7 +15,7 @@ namespace FrontEnd
     public partial class CharacterForm : Form
     {
         MovieManagerText fileManager;
-        public List<string> info = new List<string>();
+        public List<Character> characters = new List<Character>();
         DateTime birth;
         public CharacterForm()
         {
@@ -39,6 +39,7 @@ namespace FrontEnd
             }
             else
             {
+                this.listBox1.SelectionMode = SelectionMode.MultiExtended;
                 foreach (Character s in fileManager.GetActors())
                 {
                     this.listBox1.Items.Add(s.FullName);
@@ -76,6 +77,14 @@ namespace FrontEnd
                 calendarForm.Close();
             };
             calendarForm.ShowDialog();
+            if (this.Tag.ToString() == "Director")
+            {
+                fileManager.AddDirector($"{Guid.NewGuid()};{textBox1.Text};{birth.Year}");
+            }
+            else
+            {
+                fileManager.AddActor($"{Guid.NewGuid()};{textBox1.Text};{birth.Year}");
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -85,24 +94,23 @@ namespace FrontEnd
                 List<Character> c = fileManager.GetDirectors();
                 foreach (Character ch in c)
                 {
-                    if (ch.FullName == listBox1.Items[listBox1.SelectedIndex].ToString())
+                    if (ch.FullName == listBox1.SelectedItem.ToString())
                     {
-                        this.info.Add(ch.GetUUID().ToString());
-                        this.info.Add(listBox1.Items[listBox1.SelectedIndex].ToString());
-                        this.info.Add(ch.birth.ToString());
+                        characters.Add(ch);
                     }
                 }
             }
             else
             {
                 List<Character> c = fileManager.GetActors();
-                foreach(Character ch in c)
+                foreach (string s in listBox1.SelectedItems)
                 {
-                    if (ch.FullName == listBox1.Items[listBox1.SelectedIndex].ToString())
+                    foreach (Character ch in c)
                     {
-                        this.info.Add(ch.GetUUID().ToString());
-                        this.info.Add(listBox1.Items[listBox1.SelectedIndex].ToString());
-                        this.info.Add(ch.birth.ToString());
+                        if (ch.FullName == s.ToString())
+                        {
+                            characters.Add(ch);
+                        }
                     }
                 }
             }

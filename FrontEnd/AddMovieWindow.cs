@@ -16,7 +16,7 @@ namespace FrontEnd
         public Movie movie;
         private string imagePath = string.Empty;
         private Character director;
-        private Character actors;
+        private List<Character> actors;
         public AddMovieWindow()
         {
             InitializeComponent();
@@ -43,7 +43,10 @@ namespace FrontEnd
             movie = new Movie(textBox1.Text, textBox2.Text, imagePath);
             movie.AddGenre(textBox3.Text);
             movie.AddDirector(director);
-            movie.AddActor(actors);
+            foreach(Character actor in actors)
+            {
+                movie.AddActor(actor);
+            }
             this.Close();
         }
 
@@ -66,7 +69,7 @@ namespace FrontEnd
                 // Set the selected image path to the text box
                 imagePath = openFileDialog.FileName;
             }
-
+            label9.Text = imagePath;
         }
 
         private void label5_Click(object sender, EventArgs e)
@@ -81,7 +84,8 @@ namespace FrontEnd
             cf.Tag = "Director";
             cf.ShowDialog();
 
-            director = new Character(Guid.Parse(cf.info[0]),cf.info[1], Int32.Parse(cf.info[2]));
+            director = cf.characters[0];
+            label7.Text = director.FullName;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -89,7 +93,8 @@ namespace FrontEnd
             CharacterForm cf = new CharacterForm();
             cf.Tag = "Actor";
             cf.ShowDialog();
-            actors = new Character(Guid.Parse(cf.info[0]), cf.info[1], Int32.Parse(cf.info[2]));
+            actors = cf.characters;
+            label8.Text = string.Join(",", cf.characters.Select(c => c.FullName));
         }
     }
 }
