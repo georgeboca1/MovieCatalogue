@@ -20,6 +20,7 @@ namespace FrontEnd
         public AddMovieWindow()
         {
             InitializeComponent();
+            Application.Idle += this.check;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -56,6 +57,31 @@ namespace FrontEnd
                 (Screen.PrimaryScreen.WorkingArea.Width - this.Width) / 2,
                 (Screen.PrimaryScreen.WorkingArea.Height - this.Height) / 2
             );
+            if (textBox1.Text.Length <= 0)
+            {
+                textBox1.BackColor = Color.FromArgb(100,0,0);
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox1.BackColor = Color.FromArgb(22, 22, 22);
+            }
+            if (textBox2.Text.Length <= 0)
+            {
+                textBox2.BackColor = Color.FromArgb(100, 0, 0);
+            }
+            else
+            {
+                textBox2.BackColor = Color.FromArgb(22, 22, 22);
+            }
+            if (textBox3.Text.Length <= 0)
+            {
+                textBox3.BackColor = Color.FromArgb(100, 0, 0);
+            }
+            else
+            {
+                textBox3.BackColor = Color.FromArgb(22, 22, 22);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -68,6 +94,10 @@ namespace FrontEnd
             {
                 // Set the selected image path to the text box
                 imagePath = openFileDialog.FileName;
+            }
+            if (imagePath.Count() == 0)
+            {
+                button3.ForeColor = Color.FromArgb(100, 0, 0);
             }
             label9.Text = imagePath;
         }
@@ -84,8 +114,15 @@ namespace FrontEnd
             cf.Tag = "Director";
             cf.ShowDialog();
 
-            director = cf.characters[0];
-            label7.Text = director.FullName;
+            if (cf.characters.Count != 0)
+            {
+                director = cf.characters[0];
+                label7.Text = director.FullName;
+            }
+            if (director == null)
+            {
+                button4.BackColor = Color.FromArgb(100, 0, 0);
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -95,6 +132,81 @@ namespace FrontEnd
             cf.ShowDialog();
             actors = cf.characters;
             label8.Text = string.Join(",", cf.characters.Select(c => c.FullName));
+
+            if (cf.characters.Count != 0)
+            {
+                actors = cf.characters;
+                label8.Text = string.Join(",", cf.characters.Select(c => c.FullName));
+            }
+            if (director == null)
+            {
+                button5.BackColor = Color.FromArgb(100, 0, 0);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text.Length <= 0)
+            {
+                textBox1.BackColor = Color.FromArgb(100, 0, 0);
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox1.BackColor = Color.FromArgb(22,22,22);
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox2.Text.Length <= 0)
+            {
+                textBox2.BackColor = Color.FromArgb(100, 0, 0);
+            }
+            else
+            {
+                textBox2.BackColor = Color.FromArgb(22, 22, 22);
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox3.Text.Length <= 0)
+            {
+                textBox3.BackColor = Color.FromArgb(100, 0, 0);
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox3.BackColor = Color.FromArgb(22, 22, 22);
+            }
+            if (Enum.TryParse<GenreType>(textBox3.Text, true, out _))
+            {
+                textBox3.BackColor = Color.FromArgb(22, 22, 22);
+                button1.Enabled = false;
+            }
+            else
+            {
+                textBox3.BackColor = Color.FromArgb(100, 0, 0);
+            }
+        }
+
+        private void check(object sender, EventArgs e)
+        {
+
+            if (textBox1.BackColor == Color.FromArgb(100, 0, 0) ||
+                textBox2.BackColor == Color.FromArgb(100, 0, 0) ||
+                textBox3.BackColor == Color.FromArgb(100, 0, 0) ||
+                label7.Text.Length == 0 ||
+                label8.Text.Length == 0 ||
+                label9.Text.Length == 0
+                )
+            {
+                button1.Enabled = false;
+                return;
+            }
+
+            button1.Enabled = true;
         }
     }
 }

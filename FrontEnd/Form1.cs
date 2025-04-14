@@ -273,5 +273,30 @@ namespace FrontEnd
             fileManager.AddMovie(addMovieWindow.movie.DatabaseInfo());
 
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string filterText = textBox1.Text.Trim().ToLowerInvariant();
+
+            foreach (Control itemControl in flowLayoutPanel1.Controls)
+            {
+                string itemText = itemControl.Controls[1].ToString().ToLowerInvariant(); // Use ?. for null safety
+
+                if (itemText != null)
+                {
+                    bool shouldBeVisible = string.IsNullOrEmpty(filterText) || itemText.Contains(filterText);
+
+                    itemControl.Visible = shouldBeVisible;
+                }
+                else
+                {
+                    // Optional: Decide what to do if an item doesn't have text in its Tag
+                    // Maybe always show it? Or always hide it if filtering?
+                    // For simplicity, let's assume items without Tags are always visible,
+                    // or you ensure all relevant items have a Tag.
+                    // itemControl.Visible = true; // Or false, depending on requirements
+                }
+            }
+        }
     }
 }

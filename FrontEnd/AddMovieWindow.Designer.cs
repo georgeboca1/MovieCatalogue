@@ -87,6 +87,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(306, 20);
             this.textBox1.TabIndex = 3;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -96,6 +97,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(306, 20);
             this.textBox2.TabIndex = 4;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 
@@ -105,6 +107,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(306, 20);
             this.textBox3.TabIndex = 5;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // button1
             // 
@@ -197,9 +200,8 @@
             this.label7.ForeColor = System.Drawing.SystemColors.Control;
             this.label7.Location = new System.Drawing.Point(156, 104);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(10, 13);
+            this.label7.Size = new System.Drawing.Size(0, 13);
             this.label7.TabIndex = 15;
-            this.label7.Text = " ";
             // 
             // label8
             // 
@@ -208,7 +210,6 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(215, 23);
             this.label8.TabIndex = 16;
-            this.label8.Text = " ";
             // 
             // label9
             // 
@@ -216,9 +217,8 @@
             this.label9.ForeColor = System.Drawing.SystemColors.Control;
             this.label9.Location = new System.Drawing.Point(156, 162);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(10, 13);
+            this.label9.Size = new System.Drawing.Size(0, 13);
             this.label9.TabIndex = 17;
-            this.label9.Text = " ";
             // 
             // AddMovieWindow
             // 
