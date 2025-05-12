@@ -14,7 +14,8 @@ namespace MovieModels
         Biography = 4,
         Comedy = 5,
         Crime = 6,
-        Drama = 7
+        Drama = 7,
+        Family = 8
     }
 
     public class Movie
@@ -29,8 +30,9 @@ namespace MovieModels
         public string Description { get; set; }
         public string Review { get; set; }
         public string ImagePath { get; set; }
-
+        public int watched { get; set; } = 0; // 0 - not watched, 1 - watched
         private GenreType Genre { get; set; }
+        private int year { get; set; }
 
         public Movie()
         {
@@ -80,6 +82,8 @@ namespace MovieModels
             this.Director = new Character("null null", DateTime.Today.Year);
             this.Genre = (GenreType)Enum.Parse(typeof(GenreType),data[7]);
             this.ImagePath = data[8];
+            this.watched = Convert.ToInt32(data[9]);
+            this.year = Int32.Parse(data[10]);
         }
 
         public Guid GetUUID()
@@ -99,6 +103,16 @@ namespace MovieModels
         public void AddReview(string review)
         {
             this.Review = review;
+        }
+
+        public void AddYear(int year)
+        {
+            this.year = year;
+        }
+
+        public int GetYear(int year)
+        {
+            return year;
         }
 
         public void AddDirector(Character director)
@@ -149,7 +163,7 @@ namespace MovieModels
 
         public string DatabaseInfo()
         {
-            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director.GetUUID()};{string.Join("|",this.actors.ToArray().Select(a => a.GetUUID()))};{this.Genre.ToString()};{this.ImagePath}";
+            return $"{this.Uuid};{this.Name};{this.Description};{this.Rating};{this.Review};{this.Director?.GetUUID()};{string.Join("|",this.actors.ToArray().Select(a => a?.GetUUID()))};{this.Genre.ToString()};{this.ImagePath};{this.watched};{this.year}";
         }
 
         public override string ToString()

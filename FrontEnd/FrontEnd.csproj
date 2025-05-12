@@ -58,6 +58,9 @@
     <Compile Include="CharacterForm.Designer.cs">
       <DependentUpon>CharacterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +86,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -110,6 +114,24 @@
       <Project>{0e03ab8a-1301-48ef-9a32-59859f2d9591}</Project>
       <Name>MovieModels</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\download.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\broom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\pattern.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\view.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\delete.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CatalogueModel;
+using FancyControls;
 using FileManager;
 using MovieModels;
 
@@ -26,17 +27,21 @@ namespace FrontEnd
         public Form1()
         {
             this.Load += Form1_Load;
+            this.Resize += Form1_Resize;
             Environment.CurrentDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\.."));
 
             catalogue = new Catalogue();
             fileManager = new MovieManagerText("movies.txt", "actors.txt", "directors.txt");
             fileManager.GetMovies(ref catalogue);
 
-            
+
             InitializeComponent();
         }
 
-
+        private void Form1_Resize1(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -51,7 +56,7 @@ namespace FrontEnd
                 Panel card = CreateMovieCard(m.ImagePath, m.Name);
                 foreach (Control child in card.Controls)
                 {
-                    child.Click += (s, args) => ShowMovieDetails(m); // Memory Leak?
+                    child.Click += (s, args) => ShowMovieDetails(m);
                 }
 
                 flowLayoutPanel1.Controls.Add(card);
@@ -75,7 +80,6 @@ namespace FrontEnd
 
         void ShowMovieDetails(Movie movie)
         {
-            this.SuspendLayout();
             // Remove grid, create details panel
             this.Controls.Remove(this.movieGridPanel);
 
@@ -83,8 +87,10 @@ namespace FrontEnd
             {
                 Height = this.Size.Height - 110,
                 Dock = DockStyle.Bottom,
-                BackColor = Color.FromArgb(44, 44, 44)
+                BackColor = Color.FromArgb(44, 44, 44),
+                BackgroundImage = Properties.Resources.pattern,
             };
+            this.movieDetailsPanel.SuspendLayout();
 
             var Title = new Label
             {
@@ -101,13 +107,13 @@ namespace FrontEnd
             var description = new Label
             {
                 AutoSize = true,
-                MaximumSize = new Size(800, 0), // Set maximum size to allow wrapping
+                MaximumSize = new Size(500, 0), // Set maximum size to allow wrapping
                 Text = movie.Description,
                 ForeColor = Color.White,
                 Dock = DockStyle.None,
                 Font = new Font("Montserrat ExtraLight", 14, FontStyle.Bold),
                 Left = 400,
-                Top = 50
+                Top = 50,
             };
 
             var genre = new Label
@@ -119,6 +125,29 @@ namespace FrontEnd
                 Font = new Font("Montserrat ExtraLight", 14, FontStyle.Bold),
                 Left = 400,
                 Top = description.Top + description.PreferredHeight + 20 // Position below the description label
+            };
+
+            var director = new Label
+            {
+                AutoSize = true,
+                Text = $"Director: {(movie.GetDirector().FullName == "null null" ? "Not set yet" : movie.GetDirector().FullName) }",
+                ForeColor = Color.White,
+                Dock = DockStyle.None,
+                Font = new Font("Montserrat ExtraLight", 14, FontStyle.Bold),
+                Left = 400,
+                Top = description.Top + description.PreferredHeight + 50 // Position below the description label
+            };
+
+            string q = string.Join(",", movie.GetActors().Select(a => a.FullName));
+            var actors = new Label
+            {
+                AutoSize = true,
+                Text = $"Actors: {(q == "" ? "Not set yet" : q)}",
+                ForeColor = Color.White,
+                Dock = DockStyle.None,
+                Font = new Font("Montserrat ExtraLight", 14, FontStyle.Bold),
+                Left = 400,
+                Top = description.Top + description.PreferredHeight + 80 // Position below the description label
             };
 
             var image = new PictureBox
@@ -139,14 +168,50 @@ namespace FrontEnd
             };
             backButton.Click += (s, e) => ReturnToGrid();
 
+            var watchedButton = new IconPickerButton
+            {
+                BackColor = Color.FromArgb(221, 163, 178),
+                Left = this.Size.Width - 100,
+                Width = 80,
+                Top = 440,
+                ButtonIcon = Properties.Resources.view,
+            };
+            watchedButton.Click += (s, e) =>
+            {
+                Movie m = catalogue.GetMovies().FirstOrDefault(mov => mov.GetUUID() == movie.GetUUID());
+                m.watched = m.watched == 1 ? 0 : 1;
+                watchedButton.BackColor = m.watched == 0 ? Color.FromArgb(221, 163, 178) : Color.FromArgb(141, 80, 108);
+                fileManager.UpdateMovie(m);
+            };
+            var deleteButton = new IconPickerButton
+            {
+                BackColor = Color.FromArgb(221, 163, 178),
+                Left = this.Size.Width - 100,
+                Width = 80,
+                Top = 390,
+                ButtonIcon = Properties.Resources.delete,
+            };
+            deleteButton.Click += (s, e) =>
+            {
+                Movie m = catalogue.GetMovies().FirstOrDefault(mov => mov.GetUUID() == movie.GetUUID());
+                fileManager.DeleteMovie(m);
+                catalogue.RemoveMovie(m);
+                flowLayoutPanel1.Controls.Remove(flowLayoutPanel1.Controls.OfType<Panel>().FirstOrDefault(p => p.Controls[1].Text == m.Name));
+                ReturnToGrid();
+            };
+
+            movieDetailsPanel.Controls.Add(actors);
+            movieDetailsPanel.Controls.Add(director);
+            movieDetailsPanel.Controls.Add(watchedButton);
             movieDetailsPanel.Controls.Add(image);
             movieDetailsPanel.Controls.Add(Title);
             movieDetailsPanel.Controls.Add(description);
             movieDetailsPanel.Controls.Add(genre);
             movieDetailsPanel.Controls.Add(backButton);
+            movieDetailsPanel.Controls.Add(deleteButton);
 
             this.Controls.Add(movieDetailsPanel);
-            this.ResumeLayout();
+            this.movieDetailsPanel.ResumeLayout();
         }
 
         private void fadeImage(object sender, PaintEventArgs e, string imagePath)
@@ -162,7 +227,7 @@ namespace FrontEnd
 
             // Apply the fade effect using a gradient brush for the right and bottom edges
             var fadeBrushHorizontal = new LinearGradientBrush(
-                new Rectangle(pictureBox.Width/2, pictureBox.Height/2, pictureBox.Width / 2, pictureBox.Height / 2),
+                new Rectangle(pictureBox.Width / 2, pictureBox.Height / 2, pictureBox.Width / 2, pictureBox.Height / 2),
                 Color.Transparent,
                 Color.FromArgb(44, 44, 44), // The color to fade to
                 LinearGradientMode.Horizontal);
@@ -230,9 +295,10 @@ namespace FrontEnd
 
         private void button1_Click(object sender, EventArgs e)
         {
-            foreach(Movie m in catalogue.Movies)
+            fileManager.GetMovies(ref catalogue);
+            foreach (Movie m in catalogue.Movies)
             {
-                flowLayoutPanel1.Controls.Add(CreateMovieCard(m.ImagePath,m.Name));
+                flowLayoutPanel1.Controls.Add(CreateMovieCard(m.ImagePath, m.Name));
             }
             System.Diagnostics.Debug.WriteLine("Clicked load button");
         }
@@ -244,7 +310,9 @@ namespace FrontEnd
 
         private void button3_Click(object sender, EventArgs e)
         {
+            this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.Controls.Clear();
+            this.flowLayoutPanel1.ResumeLayout();
             this.catalogue.Movies = new List<Movie>();
         }
 
@@ -297,6 +365,42 @@ namespace FrontEnd
                     // itemControl.Visible = true; // Or false, depending on requirements
                 }
             }
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            // Resize the movie grid panel to fill the form
+            if (this.Size.Width < 800)
+            {
+                this.titleLabel.Visible = false;
+            }
+            else
+            {
+                this.titleLabel.Visible = true;
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.flowLayoutPanel1.SuspendLayout();
+            if (!checkBox1.Checked)
+            {
+                foreach (Control itemControl in flowLayoutPanel1.Controls)
+                {
+                    if (fileManager.GetMovieByName(itemControl.Controls[1].Text)?.watched == 1)
+                    {
+                        itemControl.Visible = false;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Control itemControl in flowLayoutPanel1.Controls)
+                {
+                    itemControl.Visible = true;
+                }
+            }
+            this.flowLayoutPanel1.ResumeLayout();
         }
     }
 }

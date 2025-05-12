@@ -128,14 +128,41 @@ namespace FileManager
             for (int i = 0; i < strings.Count; i++)
             {
                 Movie m = new Movie(strings[i]);
-                m.AddDirector(GetDirector(Guid.Parse(strings[i].Split(';')[5])));
-                foreach (string actor in strings[i].Split(';')[6].Split('|'))
+                string s = strings[i].Split(';')[5];
+                if (string.IsNullOrEmpty(s))
                 {
-                    m.AddActor(GetActor(Guid.Parse(actor)));
+                    m.AddDirector(new Character("null null", DateTime.Today.Year));
+                }
+                else
+                {
+                    m.AddDirector(GetDirector(Guid.Parse(s)));
+                }
+                s = strings[i].Split(';')[6];
+                if (!string.IsNullOrEmpty(s))
+                {
+                    foreach (string actor in s.Split('|'))
+                    {
+                        m.AddActor(GetActor(Guid.Parse(actor)));
+                    }
                 }
                 movies.Add(m);
             }
             catalogue.AddMovies(movies);
+        }
+
+        public Movie GetMovieByName(string name)
+        {
+            List<string> strings = File.ReadAllLines(this.movieFileName).ToList();
+            for (int i = 0; i < strings.Count; i++)
+            {
+                string[] s = strings[i].Split(';');
+                if (s[1] == name)
+                {
+                    Movie m = new Movie(strings[i]);
+                    return m;
+                }
+            }
+            return null;
         }
 
         static Character GetDirector(Guid uuid)
@@ -162,6 +189,52 @@ namespace FileManager
                 }
             }
             return null;
+        }
+
+        public void UpdateMovie(Movie movie)
+        {
+            List<string> lines = File.ReadAllLines(this.movieFileName).ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].Contains(movie.GetUUID().ToString()))
+                {
+                    lines[i] = movie.DatabaseInfo();
+                    break;
+                }
+            }
+            // Clean the file
+            File.WriteAllText(this.movieFileName, string.Empty);
+            // Write the new lines
+            using (StreamWriter stream = new StreamWriter(this.movieFileName))
+            {
+                foreach (string line in lines)
+                {
+                    stream.WriteLine(line);
+                }
+            }
+        }
+
+        public void DeleteMovie(Movie movie)
+        {
+            List<string> lines = File.ReadAllLines(this.movieFileName).ToList();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].Contains(movie.GetUUID().ToString()))
+                {
+                    lines.RemoveAt(i);
+                    break;
+                }
+            }
+            // Clean the file
+            File.WriteAllText(this.movieFileName, string.Empty);
+            // Write the new lines
+            using (StreamWriter stream = new StreamWriter(this.movieFileName))
+            {
+                foreach (string line in lines)
+                {
+                    stream.WriteLine(line);
+                }
+            }
         }
     }
 }

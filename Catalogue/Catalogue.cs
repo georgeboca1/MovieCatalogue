@@ -28,6 +28,10 @@ namespace CatalogueModel
             }
         }
 
+        public void RemoveMovie(Movie m)
+        {
+            Movies.Remove(m);
+        }
         public int RemoveMovieByUUID(Guid uuid)
         {
             Movie m = Movies.Find(mov => mov.GetUUID() == uuid);
